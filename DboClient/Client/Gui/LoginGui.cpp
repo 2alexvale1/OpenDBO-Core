@@ -493,7 +493,10 @@ VOID CLogInGui::LogInStageEnterEventHandler(RWS::CMsg &msg)
 		CNtlSoundEventGenerator::SendEventMusic(EVENT_MUSIC_START_MAIN_THEME);
 		m_pLoginButton->ClickEnable(false);
 		m_pAccountInput->SetFocus();
-		Show(true);		
+		Show(true);
+		m_pAccountInput->SetText("test2");
+		m_pPasswardInput->SetText("test");
+		ClickedLoginButton(NULL);
 		break;
 	case LOGIN_STATE_SERVER_CONNECT_FAIL:
 		GetAlarmManager()->AlarmMessage( "DST_CHAR_SERVER_CONNECT_FAIL" );
