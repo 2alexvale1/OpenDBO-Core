@@ -132,10 +132,14 @@ void CNtlSobWorldItem::HandleEvents(RWS::CMsg &pMsg)
 			|| pWorldItemCreate->eObjType == OBJTYPE_DROPMONEY)
 		{
 			bool bNew = false;
-			if (pWorldItemCreate->eObjType == OBJTYPE_DROPITEM)
+			if (pWorldItemCreate->eObjType == OBJTYPE_DROPITEM) {
 				bNew = reinterpret_cast<sITEM_STATE*>(pWorldItemCreate->pState)->bIsNew;
-			else if (pWorldItemCreate->eObjType == OBJTYPE_DROPMONEY)
-				bNew = reinterpret_cast<sMONEY_STATE*>( pWorldItemCreate->pState )->bIsNew;
+				hSerialIdDropItem = pWorldItemCreate->hSerialId;
+			}
+			else if (pWorldItemCreate->eObjType == OBJTYPE_DROPMONEY) {
+				bNew = reinterpret_cast<sMONEY_STATE*>(pWorldItemCreate->pState)->bIsNew;
+				hSerialIdDropItem = INVALID_SERIAL_ID;
+			}
 
 			if (bNew)
 				SwitchState(WI_CREATE);
@@ -183,6 +187,8 @@ VOID CNtlSobWorldItem::SwitchState( RwInt32 eState )
 			m_pSobProxy->EnableVisible(TRUE);
 			CreateDropEffect();
 			StateUpdate = &CNtlSobWorldItem::State_ActDropUpdate;
+			if (hSerialIdDropItem != INVALID_SERIAL_ID)
+				CNtlSLEventGenerator::SobDropItemInfoCreate(hSerialIdDropItem);
 		}
 		break;
 		case WI_ACTEND:
@@ -198,6 +204,8 @@ VOID CNtlSobWorldItem::SwitchState( RwInt32 eState )
 			m_fDestTime = 1.50f; // by daneos: for some reason, drop is invisible if we instantly call m_pSobProxy->SetBaseAnimation(ITEM_IDLE, TRUE);
 			StateUpdate = &CNtlSobWorldItem::State_NoCreateUpdate;
 			GetNtlSobManager()->AddUpdate(this);
+			if (hSerialIdDropItem != INVALID_SERIAL_ID)
+				CNtlSLEventGenerator::SobDropItemInfoCreate(hSerialIdDropItem);
 		}
 		break;
 	}
